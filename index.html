@@ -1,0 +1,1960 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bovicattl - Gestión Ganadera</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1500595046743-cd271d694d30?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+        }
+
+        header {
+            padding: 20px;
+            text-align: center;
+            background-color: rgba(139, 69, 19, 0.8);
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px #000000;
+        }
+
+        .tagline {
+            font-style: italic;
+            font-size: 1.2rem;
+            text-shadow: 1px 1px 2px #000000;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            width: 90%;
+            max-width: 800px;
+            margin-top: 30px;
+        }
+
+        .menu-button {
+            background-color: rgba(139, 69, 19, 0.9);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 25px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 180px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.4);
+            background-color: rgba(160, 82, 45, 0.95);
+        }
+
+        .menu-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .menu-button:hover::before {
+            left: 100%;
+        }
+
+        .button-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.7);
+            font-size: 0.9rem;
+        }
+
+        /* Estilos del formulario */
+        .form-container {
+            display: none;
+            background: rgba(139, 69, 19, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            margin-top: 20px;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-title {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .form-btn {
+            background: #5D4037;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+            flex: 1;
+            margin: 0 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .form-btn:hover {
+            background: #8D6E63;
+        }
+
+        .form-btn i {
+            margin-right: 8px;
+        }
+
+        .cria-fields {
+            display: none;
+            background: rgba(109, 76, 65, 0.7);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .input-hint {
+            display: block;
+            font-size: 0.8em;
+            margin-top: 5px;
+            color: #e0e0e0;
+        }
+
+        /* Estilos del inventario */
+        .inventory-container, .calendar-container, .rentability-container,
+        .lotes-container, .reports-container {
+            display: none;
+            width: 95%;
+            max-width: 900px;
+            background: rgba(139, 69, 19, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.5s;
+        }
+
+        .search-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            min-width: 120px;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+        }
+
+        .search-bar button {
+            padding: 10px 15px;
+            background: #5D4037;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .inventory-table, .calendar-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #333;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .inventory-table th, .inventory-table td,
+        .calendar-table th, .calendar-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .inventory-table th, .calendar-table th {
+            background-color: #8B4513;
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+
+        .inventory-table tr:nth-child(even),
+        .calendar-table tr:nth-child(even) {
+            background-color: rgba(139, 69, 19, 0.1);
+        }
+
+        .inventory-table tr:hover,
+        .calendar-table tr:hover {
+            background-color: rgba(139, 69, 19, 0.2);
+        }
+
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .back-btn {
+            background: #5D4037;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .back-btn:hover {
+            background: #8D6E63;
+        }
+
+        /* Estilos específicos para calendario */
+        .vaccine-form {
+            margin-bottom: 20px;
+        }
+        
+        .upcoming-vaccine {
+            background-color: #FFF3E0 !important;
+            font-weight: bold;
+        }
+        
+        .past-vaccine {
+            opacity: 0.7;
+        }
+
+        /* Estilos para lista de vacunación */
+        .vaccination-list {
+            margin-top: 20px;
+            background: rgba(109, 76, 65, 0.7);
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .animal-to-vaccinate {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .animal-to-vaccinate:last-child {
+            border-bottom: none;
+        }
+        
+        .vaccine-checkbox {
+            transform: scale(1.5);
+            margin-left: 10px;
+        }
+        
+        .vaccinated-section {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px dashed #8B4513;
+        }
+        
+        .vaccinated-animal {
+            opacity: 0.7;
+            text-decoration: line-through;
+        }
+        
+        .animal-vaccinated {
+            background-color: rgba(76, 175, 80, 0.1) !important;
+        }
+
+        /* Estilos para rentabilidad */
+        .rentability-result {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+        
+        .highlight {
+            font-size: 1.5rem;
+            color: #FFD700;
+            font-weight: bold;
+        }
+        
+        .animal-selector {
+            margin-bottom: 15px;
+        }
+        
+        .formula-display {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: monospace;
+            text-align: center;
+        }
+
+        /* Estilos para lotes */
+        .lote-list {
+            margin-bottom: 20px;
+        }
+        
+        .lote-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .lote-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .lote-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .lote-count {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        /* Estilos para reportes */
+        .report-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .report-item.urgent {
+            background: rgba(255, 215, 0, 0.2);
+            border-left: 4px solid #FFD700;
+        }
+        
+        .report-animal-name {
+            font-weight: bold;
+        }
+        
+        .report-preniez {
+            color: #FFD700;
+            font-weight: bold;
+        }
+        
+        /* Estilos para crear lote */
+        .create-lote-form {
+            display: none;
+            margin-bottom: 20px;
+        }
+        
+        .animal-selector-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+        
+        .animal-selector-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .animal-selector-item:last-child {
+            border-bottom: none;
+        }
+        
+        .animal-selector-checkbox {
+            margin-right: 10px;
+            transform: scale(1.3);
+        }
+        
+        /* Estilos para autocompletado */
+        .autocomplete-items {
+            position: absolute;
+            border: 1px solid #d4d4d4;
+            border-bottom: none;
+            border-top: none;
+            z-index: 99;
+            top: 100%;
+            left: 0;
+            right: 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .autocomplete-items div {
+            padding: 10px;
+            cursor: pointer;
+            background-color: #fff;
+            border-bottom: 1px solid #d4d4d4;
+            color: #333;
+        }
+        
+        .autocomplete-items div:hover {
+            background-color: #e9e9e9;
+        }
+        
+        .autocomplete-active {
+            background-color: #8B4513 !important;
+            color: #ffffff !important;
+        }
+        
+        /* Estilos para vista detallada */
+        .animal-detail-view {
+            display: none;
+            background: rgba(139, 69, 19, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+        
+        .animal-detail-row {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        
+        .animal-detail-label {
+            font-weight: bold;
+            width: 150px;
+        }
+        
+        .animal-detail-value {
+            flex: 1;
+        }
+        
+        /* Estilos para quitar animal de lote */
+        .remove-from-lote {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+        
+        .remove-from-lote:hover {
+            background: #b71c1c;
+        }
+
+        /* Estilos para botones de acción */
+        .action-buttons {
+            transition: all 0.3s ease;
+            display: none;
+        }
+
+        /* Estilos para radio buttons */
+        input[type="radio"] {
+            margin-right: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .button-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .menu-button {
+                height: 140px;
+                padding: 20px;
+                font-size: 1.1rem;
+            }
+            
+            .button-icon {
+                font-size: 2.5rem;
+            }
+
+            .inventory-table, .calendar-table {
+                font-size: 0.8rem;
+            }
+
+            .inventory-table th, .inventory-table td,
+            .calendar-table th, .calendar-table td {
+                padding: 8px 10px;
+            }
+            
+            .animal-detail-row {
+                flex-direction: column;
+            }
+            
+            .animal-detail-label {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+
+            .search-bar {
+                flex-direction: column;
+            }
+            
+            .search-bar input, .search-bar button {
+                width: 100%;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="logo">BOVICATTL</div>
+        <div class="tagline">Gestión inteligente para tu ganadería</div>
+    </header>
+
+    <div class="main-content">
+        <!-- Menú Principal -->
+        <div class="button-grid" id="mainMenu">
+            <button class="menu-button" id="registrarBtn">
+                <i class="fas fa-cow button-icon"></i>
+                Registrar Animal
+            </button>
+            
+            <button class="menu-button" id="inventarioBtn">
+                <i class="fas fa-clipboard-list button-icon"></i>
+                Inventario
+            </button>
+            
+            <button class="menu-button" id="calendarioBtn">
+                <i class="fas fa-calendar-alt button-icon"></i>
+                Calendario de Vacunación
+            </button>
+            
+            <button class="menu-button" id="rentabilidadBtn">
+                <i class="fas fa-calculator button-icon"></i>
+                Calcular Rentabilidad
+            </button>
+            
+            <button class="menu-button" id="lotesBtn">
+                <i class="fas fa-map-marked-alt button-icon"></i>
+                Lotes
+            </button>
+            
+            <button class="menu-button" id="reportesBtn">
+                <i class="fas fa-chart-line button-icon"></i>
+                Reportes
+            </button>
+        </div>
+
+        <!-- Formulario de Registro -->
+        <div class="form-container" id="registroForm">
+            <h2 class="form-title"><i class="fas fa-pen"></i> Registrar Nuevo Animal</h2>
+            <form id="animalForm">
+                <div class="form-group">
+                    <label for="animalName"><i class="fas fa-tag"></i> Nombre:</label>
+                    <input type="text" id="animalName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="animalNum"><i class="fas fa-hashtag"></i> Número de Coqueta:</label>
+                    <input type="number" id="animalNum" required min="1" pattern="[0-9]+">
+                    <span class="input-hint">Solo números (ej: 2508)</span>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-venus-mars"></i> Estado Reproductivo:</label>
+                    <div style="display: flex; gap: 15px; margin-top: 10px;">
+                        <label style="display: flex; align-items: center;">
+                            <input type="radio" name="animalEstado" value="parida" checked> Parida
+                        </label>
+                        <label style="display: flex; align-items: center;">
+                            <input type="radio" name="animalEstado" value="horra"> Horra
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="animalRaza"><i class="fas fa-dna"></i> Raza:</label>
+                    <input type="text" id="animalRaza" required autocomplete="off">
+                    <span class="input-hint">Escriba para autocompletar (ej: Angus, Holstein)</span>
+                    <div id="razaAutocomplete" class="autocomplete-items"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="animalTipo"><i class="fas fa-filter"></i> Tipo de Producción:</label>
+                    <select id="animalTipo" required>
+                        <option value="">Seleccione...</option>
+                        <option value="Carne">Carne</option>
+                        <option value="Leche">Leche</option>
+                        <option value="Doble Propósito">Doble Propósito</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="animalEdad"><i class="fas fa-birthday-cake"></i> Edad:</label>
+                    <input type="number" id="animalEdad" step="0.1" min="0" required>
+                    <span class="input-hint">En años (ej: 2.5 para 2 años y medio)</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="animalPartos"><i class="fas fa-baby"></i> Número de Partos:</label>
+                    <input type="number" id="animalPartos" min="0" value="0">
+                </div>
+                
+                <div class="form-group">
+                    <label for="animalPreniez"><i class="fas fa-clock"></i> Tiempo de Preñez:</label>
+                    <input type="number" id="animalPreniez" min="0" max="9" step="0.5" value="0">
+                    <span class="input-hint">En meses (0-9, ej: 5.5 para 5 meses y medio)</span>
+                </div>
+                
+                <!-- Campos para crías (aparecen solo si es parida) -->
+                <div class="cria-fields" id="criaFields">
+                    <div class="form-group">
+                        <label for="animalCriaEdad"><i class="fas fa-baby"></i> Edad de la Cría:</label>
+                        <input type="number" id="animalCriaEdad" min="0" step="0.1">
+                        <span class="input-hint">En años (ej: 0.3 para ~4 meses)</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="animalCriaPeso"><i class="fas fa-weight-hanging"></i> Peso de la Cría:</label>
+                        <input type="number" id="animalCriaPeso" min="0" step="0.1">
+                        <span class="input-hint">En kilogramos (ej: 85.5)</span>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="form-btn" id="cancelarBtn">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button type="submit" class="form-btn">
+                        <i class="fas fa-save"></i> Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Inventario -->
+        <div class="inventory-container" id="inventoryContainer">
+            <h2 class="form-title"><i class="fas fa-clipboard-list"></i> Inventario de Animales</h2>
+            
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Buscar por nombre o número">
+                <input type="number" id="filterPartos" placeholder="Partos mínimos" min="0">
+                <input type="number" id="filterEdadMin" placeholder="Edad mínima" min="0" step="0.1">
+                <input type="number" id="filterEdadMax" placeholder="Edad máxima" min="0" step="0.1">
+                <button id="searchBtn"><i class="fas fa-search"></i> Buscar</button>
+                <button id="resetFiltersBtn"><i class="fas fa-redo"></i> Limpiar</button>
+            </div>
+            
+            <div class="table-container">
+                <table class="inventory-table" id="inventoryTable">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Coqueta</th>
+                            <th>Raza</th>
+                            <th>Tipo</th>
+                            <th>Edad</th>
+                            <th>Partos</th>
+                            <th>Preñez</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventoryBody">
+                        <!-- Los datos se cargarán aquí dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <button class="back-btn" id="backFromInventoryBtn">
+                <i class="fas fa-arrow-left"></i> Volver al Menú
+            </button>
+        </div>
+
+        <!-- Calendario de Vacunación -->
+        <div class="calendar-container" id="calendarContainer">
+            <h2 class="form-title"><i class="fas fa-syringe"></i> Calendario de Vacunación</h2>
+            
+            <div class="vaccine-form">
+                <div class="form-group">
+                    <label for="vaccineName"><i class="fas fa-medkit"></i> Nombre de la Vacuna:</label>
+                    <input type="text" id="vaccineName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="vaccineDate"><i class="fas fa-calendar-day"></i> Fecha de Aplicación:</label>
+                    <input type="date" id="vaccineDate" required>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-cow"></i> Aplicar a:</label>
+                    <div style="display: flex; gap: 15px; margin-top: 10px;">
+                        <label style="display: flex; align-items: center;">
+                            <input type="radio" name="applyTo" value="all" checked> Todos los animales
+                        </label>
+                        <label style="display: flex; align-items: center;">
+                            <input type="radio" name="applyTo" value="lote"> Lote específico
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group" id="loteGroup" style="display: none;">
+                    <label for="loteName"><i class="fas fa-map-marked-alt"></i> Nombre del Lote:</label>
+                    <input type="text" id="loteName">
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="form-btn" id="cancelVaccineBtn">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button type="button" class="form-btn" id="saveVaccineBtn">
+                        <i class="fas fa-save"></i> Programar Vacuna
+                    </button>
+                </div>
+            </div>
+            
+            <h3 style="margin: 20px 0 10px; text-align: center;">Vacunas Programadas</h3>
+            <div class="table-container">
+                <table class="calendar-table" id="vaccineTable">
+                    <thead>
+                        <tr>
+                            <th>Vacuna</th>
+                            <th>Fecha</th>
+                            <th>Aplicar a</th>
+                            <th>Estado</th>
+                            <th>Vacunados</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="vaccineBody">
+                        <!-- Los datos se cargarán aquí dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Lista de animales para vacunar -->
+            <div class="vaccination-list" id="vaccinationList" style="display: none;">
+                <h3 style="margin-bottom: 15px;"><i class="fas fa-syringe"></i> Aplicar vacuna a:</h3>
+                <div id="animalsToVaccinate">
+                    <!-- Lista de animales aparecerá aquí -->
+                </div>
+                
+                <div class="vaccinated-section" id="vaccinatedSection" style="display: none;">
+                    <h4><i class="fas fa-check-circle"></i> Vacunados</h4>
+                    <div id="vaccinatedAnimals">
+                        <!-- Animales vacunados aparecerán aquí -->
+                    </div>
+                </div>
+                
+                <div class="form-actions" style="margin-top: 20px;">
+                    <button type="button" class="form-btn" id="cancelVaccinationBtn">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button type="button" class="form-btn" id="confirmVaccinationBtn">
+                        <i class="fas fa-save"></i> Guardar Vacunación
+                    </button>
+                </div>
+            </div>
+            
+            <button class="back-btn" id="backFromCalendarBtn">
+                <i class="fas fa-arrow-left"></i> Volver al Menú
+            </button>
+        </div>
+
+        <!-- Calculadora de Rentabilidad -->
+        <div class="rentability-container" id="rentabilityContainer">
+            <h2 class="form-title"><i class="fas fa-calculator"></i> Calcular Rentabilidad</h2>
+            
+            <div class="formula-display">
+                Fórmula: <br>
+                <strong>Rentabilidad = (Número de partos / (Edad - 2)) × 100</strong>
+            </div>
+            
+            <div class="animal-selector">
+                <div class="form-group">
+                    <label for="selectAnimal"><i class="fas fa-cow"></i> Seleccionar Animal:</label>
+                    <select id="selectAnimal" class="form-control">
+                        <option value="">Seleccione un animal...</option>
+                        <!-- Se llenará dinámicamente -->
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="animalAge"><i class="fas fa-birthday-cake"></i> Edad del Animal (años):</label>
+                <input type="number" id="animalAge" step="0.1" min="2.1" class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label for="animalPartosCalc"><i class="fas fa-baby"></i> Número de Partos:</label>
+                <input type="number" id="animalPartosCalc" min="0" class="form-control">
+            </div>
+            
+            <div class="rentability-result" id="rentabilityResult" style="display: none;">
+                <p>Rentabilidad calculada:</p>
+                <p class="highlight" id="rentabilityValue">0%</p>
+                <p id="rentabilityMessage"></p>
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="form-btn" id="backFromRentabilityBtn">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </button>
+                <button type="button" class="form-btn" id="calculateRentabilityBtn">
+                    <i class="fas fa-calculator"></i> Calcular
+                </button>
+            </div>
+        </div>
+
+        <!-- Gestión de Lotes -->
+        <div class="lotes-container" id="lotesContainer">
+            <h2 class="form-title"><i class="fas fa-map-marked-alt"></i> Gestión de Lotes</h2>
+            
+            <button class="form-btn" id="crearLoteBtn" style="margin-bottom: 20px;">
+                <i class="fas fa-plus"></i> Crear Nuevo Lote
+            </button>
+            
+            <!-- Formulario para crear lote -->
+            <div class="create-lote-form" id="createLoteForm">
+                <div class="form-group">
+                    <label for="newLoteName"><i class="fas fa-tag"></i> Nombre del Lote:</label>
+                    <input type="text" id="newLoteName" required>
+                </div>
+                
+                <h3 style="margin: 15px 0 10px;"><i class="fas fa-cow"></i> Seleccionar Animales:</h3>
+                <div class="animal-selector-list" id="animalSelectorList">
+                    <!-- Lista de animales para seleccionar -->
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="form-btn" id="cancelCreateLoteBtn">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button type="button" class="form-btn" id="saveLoteBtn">
+                        <i class="fas fa-save"></i> Guardar Lote
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Lista de lotes existentes -->
+            <div class="lote-list" id="loteList">
+                <!-- Lotes se cargarán aquí dinámicamente -->
+            </div>
+            
+            <!-- Contenedor para mostrar animales del lote -->
+            <div class="inventory-container" id="loteAnimalsContainer" style="display: none;">
+                <h3 id="loteAnimalsTitle"></h3>
+                
+                <div class="table-container">
+                    <table class="inventory-table" id="loteAnimalsTable">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Coqueta</th>
+                                <th>Raza</th>
+                                <th>Edad</th>
+                                <th>Partos</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="loteAnimalsBody">
+                            <!-- Animales del lote se cargarán aquí -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <button class="back-btn" id="backFromLoteAnimalsBtn">
+                    <i class="fas fa-arrow-left"></i> Volver a Lotes
+                </button>
+            </div>
+            
+            <button class="back-btn" id="backFromLotesBtn">
+                <i class="fas fa-arrow-left"></i> Volver al Menú
+            </button>
+        </div>
+
+        <!-- Reportes -->
+        <div class="reports-container" id="reportsContainer">
+            <h2 class="form-title"><i class="fas fa-chart-line"></i> Reportes</h2>
+            
+            <h3 style="margin: 20px 0 15px;"><i class="fas fa-baby"></i> Animales próximos a parir</h3>
+            <div id="reportPartosList">
+                <!-- Animales con 8+ meses de preñez se mostrarán aquí -->
+            </div>
+            
+            <!-- Vista detallada del animal -->
+            <div class="animal-detail-view" id="animalDetailView">
+                <h3 style="margin-bottom: 15px;"><i class="fas fa-info-circle"></i> Detalles del Animal</h3>
+                <div class="animal-detail-row">
+                    <div class="animal-detail-label">Nombre:</div>
+                    <div class="animal-detail-value" id="detailNombre"></div>
+                </div>
+                <div class="animal-detail-row">
+                    <div class="animal-detail-label">Coqueta:</div>
+                    <div class="animal-detail-value" id="detailCoqueta"></div>
+                </div>
+                <div class="animal-detail-row">
+                    <div class="animal-detail-label">Raza:</div>
+                    <div class="animal-detail-value" id="detailRaza"></div>
+                </div>
+                <div class="animal-detail-row">
+                    <div class="animal-detail-label">Tipo:</div>
+                    <div class="animal-detail-value" id="detailTipo"></div>
+                </div>
+                <div class="animal-detail-row">
+                    <div class="animal-detail-label">Edad:</div>
+                    <div class="animal-detail-value" id="detailEdad"></div>
+                </div>
+                <div class="animal-detail-row">
+                    <div class="animal-detail-label">Partos:</div>
+                    <div class="animal-detail-value" id="detailPartos"></div>
+                </div>
+                <div class="animal-detail-row">
+                    <div class="animal-detail-label">Preñez:</div>
+                    <div class="animal-detail-value" id="detailPreniez"></div>
+                </div>
+                <div class="animal-detail-row">
+                    <div class="animal-detail-label">Vacunas:</div>
+                    <div class="animal-detail-value" id="detailVacunas"></div>
+                </div>
+                <div class="animal-detail-row">
+                    <div class="animal-detail-label">Lote:</div>
+                    <div class="animal-detail-value" id="detailLote"></div>
+                </div>
+                
+                <button class="back-btn" id="backFromDetailBtn" style="margin-top: 20px;">
+                    <i class="fas fa-arrow-left"></i> Volver a Reportes
+                </button>
+            </div>
+            
+            <button class="back-btn" id="backFromReportsBtn">
+                <i class="fas fa-arrow-left"></i> Volver al Menú
+            </button>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2023 Bovicattl - Todos los derechos reservados
+    </footer>
+
+    <script>
+        // ===== ALMACENAMIENTO =====
+        const ANIMAL_STORAGE_KEY = 'bovicattl_animals';
+        const VACCINE_STORAGE_KEY = 'bovicattl_vaccines';
+        const LOTE_STORAGE_KEY = 'bovicattl_lotes';
+        
+        // Razas de ganado
+        const RAZAS_CARNE = [
+            "Angus", "Hereford", "Brahman", "Brangus", "Charolais",
+            "Simmental", "Limousin", "Shorthorn", "Texas Longhorn", "Wagyu"
+        ];
+        
+        const RAZAS_LECHE = [
+            "Holstein", "Jersey", "Guernsey", "Ayrshire", "Brown Swiss",
+            "Milking Shorthorn", "Normande", "Montbéliarde", "Canadienne", "Dexter"
+        ];
+        
+        // Variable global para el lote actual
+        let currentVaccineId = null;
+        let currentLoteName = null;
+        let currentAnimalDetail = null;
+        
+        // ===== FUNCIONES COMUNES =====
+        function formatDate(dateStr) {
+            const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+            return new Date(dateStr).toLocaleDateString('es-MX', options);
+        }
+        
+        // ===== ANIMALES =====
+        function loadAnimals() {
+            const data = localStorage.getItem(ANIMAL_STORAGE_KEY);
+            return data ? JSON.parse(data) : [];
+        }
+        
+        function saveAnimals(animals) {
+            localStorage.setItem(ANIMAL_STORAGE_KEY, JSON.stringify(animals));
+        }
+        
+        // Mostrar/ocultar formulario
+        document.getElementById('registrarBtn').addEventListener('click', function() {
+            document.getElementById('registroForm').style.display = 'block';
+            document.getElementById('mainMenu').style.display = 'none';
+        });
+
+        document.getElementById('cancelarBtn').addEventListener('click', function() {
+            document.getElementById('registroForm').style.display = 'none';
+            document.getElementById('mainMenu').style.display = 'grid';
+            document.getElementById('animalForm').reset();
+            document.getElementById('criaFields').style.display = 'none';
+            document.getElementById('razaAutocomplete').innerHTML = '';
+        });
+
+        // Mostrar campos de cría si es parida
+        document.querySelectorAll('input[name="animalEstado"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const criaFields = document.getElementById('criaFields');
+                if (this.value === 'parida') {
+                    criaFields.style.display = 'block';
+                    document.getElementById('animalPartos').value = 
+                        Math.max(1, document.getElementById('animalPartos').value || 1);
+                } else {
+                    criaFields.style.display = 'none';
+                    document.getElementById('animalPartos').value = 0;
+                    document.getElementById('animalCriaEdad').value = '';
+                    document.getElementById('animalCriaPeso').value = '';
+                }
+            });
+        });
+
+        // Validar coqueta numérica
+        document.getElementById('animalNum').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        // Validar preñez máxima (9 meses)
+        document.getElementById('animalPreniez').addEventListener('change', function() {
+            if (parseFloat(this.value) > 9) {
+                alert("El tiempo de preñez no puede exceder 9 meses");
+                this.value = 9;
+            }
+        });
+
+        // Autocompletado de razas
+        document.getElementById('animalRaza').addEventListener('input', function() {
+            const input = this.value.toLowerCase();
+            const tipo = document.getElementById('animalTipo').value;
+            const autocomplete = document.getElementById('razaAutocomplete');
+            autocomplete.innerHTML = '';
+            
+            if (input.length < 2) return;
+            
+            let razasFiltradas = [];
+            
+            if (tipo === 'Carne') {
+                razasFiltradas = RAZAS_CARNE.filter(raza => 
+                    raza.toLowerCase().includes(input));
+            } else if (tipo === 'Leche') {
+                razasFiltradas = RAZAS_LECHE.filter(raza => 
+                    raza.toLowerCase().includes(input));
+            } else {
+                razasFiltradas = [...RAZAS_CARNE, ...RAZAS_LECHE].filter(raza => 
+                    raza.toLowerCase().includes(input));
+            }
+            
+            if (razasFiltradas.length === 0) {
+                autocomplete.innerHTML = '<div>No se encontraron razas</div>';
+                return;
+            }
+            
+            razasFiltradas.forEach(raza => {
+                const item = document.createElement('div');
+                item.innerHTML = raza;
+                item.addEventListener('click', function() {
+                    document.getElementById('animalRaza').value = raza;
+                    autocomplete.innerHTML = '';
+                });
+                autocomplete.appendChild(item);
+            });
+        });
+        
+        // Limpiar autocompletado al cambiar tipo
+        document.getElementById('animalTipo').addEventListener('change', function() {
+            document.getElementById('razaAutocomplete').innerHTML = '';
+        });
+
+        // Guardar datos de animal
+        document.getElementById('animalForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const animalData = {
+                nombre: document.getElementById('animalName').value.trim(),
+                coqueta: document.getElementById('animalNum').value,
+                estado: document.querySelector('input[name="animalEstado"]:checked').value,
+                raza: document.getElementById('animalRaza').value,
+                tipo: document.getElementById('animalTipo').value,
+                edad: parseFloat(document.getElementById('animalEdad').value),
+                partos: parseInt(document.getElementById('animalPartos').value),
+                preñez: parseFloat(document.getElementById('animalPreniez').value),
+                criaEdad: document.getElementById('animalCriaEdad').value ? parseFloat(document.getElementById('animalCriaEdad').value) : null,
+                criaPeso: document.getElementById('animalCriaPeso').value ? parseFloat(document.getElementById('animalCriaPeso').value) : null,
+                fechaRegistro: new Date().toLocaleDateString('es-MX'),
+                vacunas: [],
+                lote: null
+            };
+            
+            // Validar que no exista ya el número de coqueta
+            const animals = loadAnimals();
+            const coquetaExists = animals.some(animal => animal.coqueta === animalData.coqueta);
+            
+            if (coquetaExists) {
+                alert("¡Error! El número de coqueta ya está registrado");
+                return;
+            }
+            
+            animals.push(animalData);
+            saveAnimals(animals);
+            
+            alert(`¡Animal registrado!\nNombre: ${animalData.nombre}\nCoqueta: ${animalData.coqueta}`);
+            
+            this.reset();
+            document.getElementById('registroForm').style.display = 'none';
+            document.getElementById('mainMenu').style.display = 'grid';
+            document.getElementById('criaFields').style.display = 'none';
+            document.getElementById('razaAutocomplete').innerHTML = '';
+        });
+
+        // ===== INVENTARIO =====
+        document.getElementById('inventarioBtn').addEventListener('click', function() {
+            document.getElementById('inventoryContainer').style.display = 'block';
+            document.getElementById('mainMenu').style.display = 'none';
+            loadInventory();
+        });
+
+        document.getElementById('backFromInventoryBtn').addEventListener('click', function() {
+            document.getElementById('inventoryContainer').style.display = 'none';
+            document.getElementById('mainMenu').style.display = 'grid';
+        });
+
+        function loadInventory(searchTerm = '', minPartos = '', minEdad = '', maxEdad = '') {
+            const animals = loadAnimals();
+            const tbody = document.getElementById('inventoryBody');
+            tbody.innerHTML = '';
+            
+            const filteredAnimals = animals.filter(animal => {
+                // Filtro de búsqueda por nombre o coqueta
+                const matchesSearch = searchTerm === '' || 
+                    animal.nombre.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                    animal.coqueta.includes(searchTerm);
+                
+                // Filtro por número de partos
+                const matchesPartos = minPartos === '' || animal.partos >= parseInt(minPartos);
+                
+                // Filtro por edad
+                const matchesMinEdad = minEdad === '' || animal.edad >= parseFloat(minEdad);
+                const matchesMaxEdad = maxEdad === '' || animal.edad <= parseFloat(maxEdad);
+                
+                return matchesSearch && matchesPartos && matchesMinEdad && matchesMaxEdad;
+            });
+            
+            if (filteredAnimals.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">No se encontraron animales</td></tr>`;
+                return;
+            }
+            
+            filteredAnimals.forEach(animal => {
+                const row = document.createElement('tr');
+                row.dataset.coqueta = animal.coqueta;
+                
+                // Verificar si el animal tiene vacunas
+                const hasVaccines = animal.vacunas && animal.vacunas.length > 0;
+                const vaccineInfo = hasVaccines 
+                    ? animal.vacunas.map(v => `${v.nombre} (${formatDate(v.fecha)})`).join(', ')
+                    : 'No';
+                
+                row.innerHTML = `
+                    <td>${animal.nombre}</td>
+                    <td>${animal.coqueta}</td>
+                    <td>${animal.raza}</td>
+                    <td>${animal.tipo}</td>
+                    <td>${animal.edad} años</td>
+                    <td>${animal.partos}</td>
+                    <td>${animal.preñez > 0 ? animal.preñez + ' meses' : 'No'}</td>
+                    <td class="action-buttons" style="display: none;">
+                        <button class="remove-from-lote" onclick="deleteAnimal('${animal.coqueta}')">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                    </td>
+                `;
+                
+                // Agregar evento click a la fila
+                row.addEventListener('click', function() {
+                    // Ocultar todos los botones primero
+                    document.querySelectorAll('.action-buttons').forEach(btn => {
+                        btn.style.display = 'none';
+                    });
+                    
+                    // Mostrar solo los botones de esta fila
+                    this.querySelector('.action-buttons').style.display = 'block';
+                });
+                
+                if (hasVaccines) {
+                    row.classList.add('animal-vaccinated');
+                }
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        // Eliminar animal
+        window.deleteAnimal = function(coqueta) {
+            if (confirm("¿Está seguro que desea eliminar este animal?")) {
+                const animals = loadAnimals().filter(animal => animal.coqueta !== coqueta);
+                saveAnimals(animals);
+                loadInventory();
+                alert("Animal eliminado correctamente");
+            }
+        };
+
+        // Búsqueda en inventario
+        document.getElementById('searchBtn').addEventListener('click', function() {
+            const searchTerm = document.getElementById('searchInput').value;
+            const minPartos = document.getElementById('filterPartos').value;
+            const minEdad = document.getElementById('filterEdadMin').value;
+            const maxEdad = document.getElementById('filterEdadMax').value;
+            
+            loadInventory(searchTerm, minPartos, minEdad, maxEdad);
+        });
+
+        // Función para limpiar filtros
+        document.getElementById('resetFiltersBtn').addEventListener('click', function() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('filterPartos').value = '';
+            document.getElementById('filterEdadMin').value = '';
+            document.getElementById('filterEdadMax').value = '';
+            loadInventory();
+        });
+
+        document.getElementById('searchInput').addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                const searchTerm = this.value;
+                const minPartos = document.getElementById('filterPartos').value;
+                const minEdad = document.getElementById('filterEdadMin').value;
+                const maxEdad = document.getElementById('filterEdadMax').value;
+                
+                loadInventory(searchTerm, minPartos, minEdad, maxEdad);
+            }
+        });
+
+        // ===== CALENDARIO DE VACUNACIÓN =====
+        function loadVaccines() {
+            const data = localStorage.getItem(VACCINE_STORAGE_KEY);
+            return data ? JSON.parse(data) : [];
+        }
+        
+        function saveVaccines(vaccines) {
+            localStorage.setItem(VACCINE_STORAGE_KEY, JSON.stringify(vaccines));
+        }
+        
+        function getVaccineStatus(dateStr) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const vaccineDate = new Date(dateStr);
+            
+            if (vaccineDate < today) return 'past';
+            if (vaccineDate > today) return 'upcoming';
+            return 'today';
+        }
+        
+        function getStatusText(status) {
+            const statusText = {
+                'past': 'Completada',
+                'today': 'Para hoy',
+                'upcoming': 'Pendiente'
+            };
+            return statusText[status] || '';
+        }
+        
+        // Mostrar/ocultar calendario
+        document.getElementById('calendarioBtn').addEventListener('click', function() {
+            document.getElementById('calendarContainer').style.display = 'block';
+            document.getElementById('mainMenu').style.display = 'none';
+            loadVaccineCalendar();
+        });
+        
+        document.getElementById('backFromCalendarBtn').addEventListener('click', function() {
+            document.getElementById('calendarContainer').style.display = 'none';
+            document.getElementById('mainMenu').style.display = 'grid';
+            document.getElementById('vaccinationList').style.display = 'none';
+            document.getElementById('vaccineTable').style.display = 'table';
+        });
+        
+        // Mostrar campo de lote si se selecciona esa opción
+        document.querySelectorAll('input[name="applyTo"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                document.getElementById('loteGroup').style.display = 
+                    this.value === 'lote' ? 'block' : 'none';
+            });
+        });
+        
+        // Programar nueva vacuna
+        document.getElementById('saveVaccineBtn').addEventListener('click', function() {
+            const vaccineName = document.getElementById('vaccineName').value.trim();
+            const vaccineDate = document.getElementById('vaccineDate').value;
+            const applyTo = document.querySelector('input[name="applyTo"]:checked').value;
+            const loteName = applyTo === 'lote' ? document.getElementById('loteName').value.trim() : '';
+            
+            if (!vaccineName || !vaccineDate) {
+                alert("Por favor complete todos los campos obligatorios");
+                return;
+            }
+            
+            if (applyTo === 'lote' && !loteName) {
+                alert("Por favor ingrese el nombre del lote");
+                return;
+            }
+            
+            const newVaccine = {
+                id: Date.now(),
+                name: vaccineName,
+                date: vaccineDate,
+                applyTo: applyTo,
+                lote: loteName,
+                status: getVaccineStatus(vaccineDate),
+                vaccinatedAnimals: []
+            };
+            
+            const vaccines = loadVaccines();
+            vaccines.push(newVaccine);
+            saveVaccines(vaccines);
+            
+            // Limpiar formulario
+            document.getElementById('vaccineName').value = '';
+            document.getElementById('vaccineDate').value = '';
+            document.getElementById('loteName').value = '';
+            document.querySelector('input[name="applyTo"][value="all"]').checked = true;
+            document.getElementById('loteGroup').style.display = 'none';
+            
+            // Recargar calendario
+            loadVaccineCalendar();
+            
+            alert(`Vacuna "${vaccineName}" programada correctamente para el ${formatDate(vaccineDate)}`);
+        });
+        
+        // Cargar calendario de vacunas
+        function loadVaccineCalendar() {
+            const vaccines = loadVaccines();
+            const tbody = document.getElementById('vaccineBody');
+            tbody.innerHTML = '';
+            
+            if (vaccines.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">No hay vacunas programadas</td></tr>`;
+                return;
+            }
+            
+            // Ordenar por fecha (más cercanas primero)
+            vaccines.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            vaccines.forEach(vaccine => {
+                const row = document.createElement('tr');
+                if (vaccine.status === 'upcoming') {
+                    row.classList.add('upcoming-vaccine');
+                } else if (vaccine.status === 'past') {
+                    row.classList.add('past-vaccine');
+                }
+                
+                // Mostrar conteo de vacunados si existe
+                const vaccinatedCount = vaccine.vaccinatedAnimals ? vaccine.vaccinatedAnimals.length : 0;
+                
+                row.innerHTML = `
+                    <td>${vaccine.name}</td>
+                    <td>${formatDate(vaccine.date)}</td>
+                    <td>${vaccine.applyTo === 'all' ? 'Todos los animales' : `Lote: ${vaccine.lote}`}</td>
+                    <td>${getStatusText(vaccine.status)}</td>
+                    <td>${vaccinatedCount}</td>
+                    <td>
+                        <button class="form-btn" style="padding: 5px 10px; font-size: 0.8rem;" 
+                                onclick="showVaccinationList(${vaccine.id})">
+                            <i class="fas fa-syringe"></i> Vacunar
+                        </button>
+                        <button class="form-btn" style="padding: 5px 10px; font-size: 0.8rem; margin-left: 5px;" 
+                                onclick="deleteVaccine(${vaccine.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        // Función para mostrar lista de animales a vacunar
+        window.showVaccinationList = function(vaccineId) {
+            currentVaccineId = vaccineId;
+            const vaccine = loadVaccines().find(v => v.id === vaccineId);
+            
+            document.getElementById('vaccinationList').style.display = 'block';
+            document.getElementById('vaccineTable').style.display = 'none';
+            
+            // Cargar animales según el tipo de aplicación (todos o lote)
+            const animals = loadAnimals();
+            let animalsToShow = [];
+            
+            if (vaccine.applyTo === 'all') {
+                animalsToShow = animals;
+            } else {
+                animalsToShow = animals.filter(animal => 
+                    animal.lote && animal.lote === vaccine.lote);
+            }
+            
+            const container = document.getElementById('animalsToVaccinate');
+            container.innerHTML = '';
+            
+            animalsToShow.forEach(animal => {
+                const isVaccinated = vaccine.vaccinatedAnimals && 
+                                    vaccine.vaccinatedAnimals.includes(animal.coqueta);
+                
+                if (!isVaccinated) {
+                    const animalDiv = document.createElement('div');
+                    animalDiv.className = 'animal-to-vaccinate';
+                    animalDiv.innerHTML = `
+                        <span>${animal.nombre} (Coqueta: ${animal.coqueta})</span>
+                        <input type="checkbox" class="vaccine-checkbox" data-id="${animal.coqueta}">
+                    `;
+                    container.appendChild(animalDiv);
+                }
+            });
+            
+            // Mostrar sección de vacunados si existe
+            if (vaccine.vaccinatedAnimals && vaccine.vaccinatedAnimals.length > 0) {
+                showVaccinatedAnimals(vaccine);
+            }
+        };
+        
+        // Función para mostrar animales ya vacunados
+        function showVaccinatedAnimals(vaccine) {
+            const vaccinatedSection = document.getElementById('vaccinatedSection');
+            const vaccinatedContainer = document.getElementById('vaccinatedAnimals');
+            
+            vaccinatedContainer.innerHTML = '';
+            vaccine.vaccinatedAnimals.forEach(coqueta => {
+                const animal = loadAnimals().find(a => a.coqueta === coqueta);
+                if (animal) {
+                    const animalDiv = document.createElement('div');
+                    animalDiv.className = 'animal-to-vaccinate vaccinated-animal';
+                    animalDiv.innerHTML = `
+                        <span>${animal.nombre} (Coqueta: ${animal.coqueta})</span>
+                        <span><i class="fas fa-check"></i> Vacunado</span>
+                    `;
+                    vaccinatedContainer.appendChild(animalDiv);
+                }
+            });
+            
+            vaccinatedSection.style.display = 'block';
+        }
+        
+        // Confirmar vacunación
+        document.getElementById('confirmVaccinationBtn').addEventListener('click', function() {
+            const checkboxes = document.querySelectorAll('.vaccine-checkbox:checked');
+            const vaccinatedCoquetas = Array.from(checkboxes).map(cb => cb.getAttribute('data-id'));
+            
+            if (vaccinatedCoquetas.length === 0) {
+                alert("No has seleccionado ningún animal para vacunar");
+                return;
+            }
+            
+            // Actualizar vacuna con animales vacunados
+            const vaccines = loadVaccines();
+            const vaccineIndex = vaccines.findIndex(v => v.id === currentVaccineId);
+            
+            if (vaccineIndex !== -1) {
+                if (!vaccines[vaccineIndex].vaccinatedAnimals) {
+                    vaccines[vaccineIndex].vaccinatedAnimals = [];
+                }
+                
+                // Agregar nuevos vacunados (sin duplicados)
+                vaccinatedCoquetas.forEach(coqueta => {
+                    if (!vaccines[vaccineIndex].vaccinatedAnimals.includes(coqueta)) {
+                        vaccines[vaccineIndex].vaccinatedAnimals.push(coqueta);
+                    }
+                });
+                
+                saveVaccines(vaccines);
+            }
+            
+            // Actualizar estado de vacunación en los animales
+            const animals = loadAnimals();
+            vaccinatedCoquetas.forEach(coqueta => {
+                const animalIndex = animals.findIndex(a => a.coqueta === coqueta);
+                if (animalIndex !== -1) {
+                    if (!animals[animalIndex].vacunas) {
+                        animals[animalIndex].vacunas = [];
+                    }
+                    
+                    const vaccine = vaccines[vaccineIndex];
+                    animals[animalIndex].vacunas.push({
+                        nombre: vaccine.name,
+                        fecha: vaccine.date
+                    });
+                }
+            });
+            
+            saveAnimals(animals);
+            
+            alert(`Vacunación registrada para ${vaccinatedCoquetas.length} animal(es)`);
+            loadVaccineCalendar();
+            document.getElementById('vaccinationList').style.display = 'none';
+            document.getElementById('vaccineTable').style.display = 'table';
+        });
+        
+        // Cancelar vacunación
+        document.getElementById('cancelVaccinationBtn').addEventListener('click', function() {
+            document.getElementById('vaccinationList').style.display = 'none';
+            document.getElementById('vaccineTable').style.display = 'table';
+        });
+        
+        // Función para eliminar vacuna
+        window.deleteVaccine = function(id) {
+            if (confirm("¿Está seguro que desea eliminar esta vacuna programada?")) {
+                const vaccines = loadVaccines().filter(v => v.id !== id);
+                saveVaccines(vaccines);
+                loadVaccineCalendar();
+            }
+        };
+        
+        // ===== RENTABILIDAD =====
+        document.getElementById('rentabilidadBtn').addEventListener('click', function() {
+            document.getElementById('rentabilityContainer').style.display = 'block';
+            document.getElementById('mainMenu').style.display = 'none';
+            loadAnimalsForRentability();
+        });
+        
+        document.getElementById('backFromRentabilityBtn').addEventListener('click', function() {
+            document.getElementById('rentabilityContainer').style.display = 'none';
+            document.getElementById('mainMenu').style.display = 'grid';
+        });
+        
+        function loadAnimalsForRentability() {
+            const select = document.getElementById('selectAnimal');
+            select.innerHTML = '<option value="">Seleccione un animal...</option>';
+            
+            const animals = loadAnimals();
+            animals.forEach(animal => {
+                const option = document.createElement('option');
+                option.value = animal.coqueta;
+                option.textContent = `${animal.nombre} (Coqueta: ${animal.coqueta}) - ${animal.edad} años, ${animal.partos} partos`;
+                select.appendChild(option);
+            });
+        }
+        
+        document.getElementById('selectAnimal').addEventListener('change', function() {
+            const coqueta = this.value;
+            const animals = loadAnimals();
+            const animal = animals.find(a => a.coqueta === coqueta);
+            
+            if (animal) {
+                document.getElementById('animalAge').value = animal.edad;
+                document.getElementById('animalPartosCalc').value = animal.partos;
+                document.getElementById('rentabilityResult').style.display = 'none';
+            } else {
+                document.getElementById('animalAge').value = '';
+                document.getElementById('animalPartosCalc').value = '';
+            }
+        });
+        
+        document.getElementById('calculateRentabilityBtn').addEventListener('click', function() {
+            const edad = parseFloat(document.getElementById('animalAge').value);
+            const partos = parseInt(document.getElementById('animalPartosCalc').value);
+            
+            if (!edad || isNaN(edad)) {
+                alert("Por favor ingrese una edad válida");
+                return;
+            }
+            
+            if (edad <= 2) {
+                alert("La edad debe ser mayor a 2 años para calcular la rentabilidad");
+                return;
+            }
+            
+            if (!partos || isNaN(partos)) {
+                alert("Por favor ingrese un número de partos válido");
+                return;
+            }
+            
+            // Aplicar fórmula: (Número de partos / (Edad - 2)) × 100
+            const rentabilidad = (partos / (edad - 2)) * 100;
+            const roundedRent = Math.round(rentabilidad * 100) / 100; // Redondear a 2 decimales
+            
+            document.getElementById('rentabilityValue').textContent = `${roundedRent}%`;
+            
+            // Mensaje interpretativo
+            let message = "";
+            if (rentabilidad > 150) {
+                message = "Excelente rentabilidad";
+            } else if (rentabilidad > 100) {
+                message = "Buena rentabilidad";
+            } else if (rentabilidad > 50) {
+                message = "Rentabilidad aceptable";
+            } else {
+                message = "Rentabilidad baja";
+            }
+            
+            document.getElementById('rentabilityMessage').textContent = message;
+            document.getElementById('rentabilityResult').style.display = 'block';
+        });
+
+        // ===== LOTES =====
+        function loadLotes() {
+            const data = localStorage.getItem(LOTE_STORAGE_KEY);
+            return data ? JSON.parse(data) : [];
+        }
+        
+        function saveLotes(lotes) {
+            localStorage.setItem(LOTE_STORAGE_KEY, JSON.stringify(lotes));
+        }
+        
+        // Mostrar/ocultar gestión de lotes
+        document.getElementById('lotesBtn').addEventListener('click', function() {
+            document.getElementById('lotesContainer').style.display = 'block';
+            document.getElementById('mainMenu').style.display = 'none';
+            loadLoteList();
+        });
+        
+        document.getElementById('backFromLotesBtn').addEventListener('click', function() {
+            document.getElementById('lotesContainer').style.display = 'none';
+            document.getElementById('mainMenu').style.display = 'grid';
+            document.getElementById('createLoteForm').style.display = 'none';
+            document.getElementById('loteAnimalsContainer').style.display = 'none';
+        });
+        
+        // Cargar lista de lotes
+        function loadLoteList() {
+            const lotes = loadLotes();
+            const loteList = document.getElementById('loteList');
+            loteList.innerHTML = '';
+            
+            if (lotes.length === 0) {
+                loteList.innerHTML = '<p style="text-align: center;">No hay lotes creados</p>';
+                return;
+            }
+            
+            // Contar animales por lote
+            const animals = loadAnimals();
+            const loteCounts = {};
+            
+            animals.forEach(animal => {
+                if (animal.lote) {
+                    if (!loteCounts[animal.lote]) {
+                        loteCounts[animal.lote] = 0;
+                    }
+                    loteCounts[animal.lote]++;
+                }
+            });
+            
+            lotes.forEach(lote => {
+                const loteItem = document.createElement('div');
+                loteItem.className = 'lote-item';
+                loteItem.innerHTML = `
+                    <div class="lote-name">${lote.nombre}</div>
+                    <div class="lote-count">${loteCounts[lote.nombre] || 0} animales</div>
+                `;
+                
+                loteItem.addEventListener('click', function() {
+                    showLoteAnimals(lote.nombre);
+                });
+                
+                loteList.appendChild(loteItem);
+            });
+        }
+        
+        // Mostrar animales de un lote específico
+        function showLoteAnimals(loteName) {
+            currentLoteName = loteName;
+            document.getElementById('loteList').style.display = 'none';
+            document.getElementById('loteAnimalsContainer').style.display = 'block';
+            document.getElementById('loteAnimalsTitle').textContent = `Animales del Lote: ${loteName}`;
+            
+            const animals = loadAnimals();
+            const loteAnimals = animals.filter(animal => animal.lote === loteName);
+            const tbody = document.getElementById('loteAnimalsBody');
+            tbody.innerHTML = '';
+            
+            if (loteAnimals.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay animales en este lote</td></tr>';
+                return;
+            }
+            
+            loteAnimals.forEach(animal => {
+                const row = document.createElement('tr');
+                row.dataset.coqueta = animal.coqueta;
+                
+                row.innerHTML = `
+                    <td>${animal.nombre}</td>
+                    <td>${animal.coqueta}</td>
+                    <td>${animal.raza}</td>
+                    <td>${animal.edad} años</td>
+                    <td>${animal.partos}</td>
+                    <td class="action-buttons" style="display: none;">
+                        <button class="remove-from-lote" onclick="removeFromLote('${animal.coqueta}')">
+                            <i class="fas fa-minus-circle"></i> Quitar
+                        </button>
+                    </td>
+                `;
+                
+                // Agregar evento click a la fila
+                row.addEventListener('click', function() {
+                    // Ocultar todos los botones primero
+                    document.querySelectorAll('.action-buttons').forEach(btn => {
+                        btn.style.display = 'none';
+                    });
+                    
+                    // Mostrar solo los botones de esta fila
+                    this.querySelector('.action-buttons').style.display = 'block';
+                });
+                
+                tbody.appendChild(row);
+            });
+        }
+        
+        // Quitar animal de lote
+        window.removeFromLote = function(coqueta) {
+            if (confirm("¿Está seguro que desea quitar este animal del lote?")) {
+                const animals = loadAnimals();
+                const animalIndex = animals.findIndex(a => a.coqueta === coqueta);
+                
+                if (animalIndex !== -1) {
+                    animals[animalIndex].lote = null;
+                    saveAnimals(animals);
+                    showLoteAnimals(currentLoteName);
+                    alert("Animal quitado del lote correctamente");
+                }
+            }
+        };
+        
+        // Volver de la vista de animales del lote
+        document.getElementById('backFromLoteAnimalsBtn').addEventListener('click', function() {
+            document.getElementById('loteAnimalsContainer').style.display = 'none';
+            document.getElementById('loteList').style.display = 'block';
+        });
+        
+        // Mostrar formulario para crear lote
+        document.getElementById('crearLoteBtn').addEventListener('click', function() {
+            document.getElementById('createLoteForm').style.display = 'block';
+            document.getElementById('loteList').style.display = 'none';
+            loadAnimalSelector();
+        });
+        
+        // Cancelar creación de lote
+        document.getElementById('cancelCreateLoteBtn').addEventListener('click', function() {
+            document.getElementById('createLoteForm').style.display = 'none';
+            document.getElementById('loteList').style.display = 'block';
+            document.getElementById('newLoteName').value = '';
+        });
+        
+        // Cargar selector de animales para crear lote
+        function loadAnimalSelector() {
+            const animals = loadAnimals();
+            const selectorList = document.getElementById('animalSelectorList');
+            selectorList.innerHTML = '';
+            
+            if (animals.length === 0) {
+                selectorList.innerHTML = '<p style="text-align: center;">No hay animales registrados</p>';
+                return;
+            }
+            
+            animals.forEach(animal => {
+                const item = document.createElement('div');
+                item.className = 'animal-selector-item';
+                item.innerHTML = `
+                    <input type="checkbox" class="animal-selector-checkbox" id="animal-${animal.coqueta}" value="${animal.coqueta}">
+                    <label for="animal-${animal.coqueta}">
+                        ${animal.nombre} (Coqueta: ${animal.coqueta}) - ${animal.raza}, ${animal.edad} años
+                    </label>
+                `;
+                selectorList.appendChild(item);
+            });
+        }
+        
+        // Guardar nuevo lote
+        document.getElementById('saveLoteBtn').addEventListener('click', function() {
+            const loteName = document.getElementById('newLoteName').value.trim();
+            
+            if (!loteName) {
+                alert("Por favor ingrese un nombre para el lote");
+                return;
+            }
+            
+            const checkboxes = document.querySelectorAll('.animal-selector-checkbox:checked');
+            const selectedAnimals = Array.from(checkboxes).map(cb => cb.value);
+            
+            if (selectedAnimals.length === 0) {
+                alert("Por favor seleccione al menos un animal para el lote");
+                return;
+            }
+            
+            // Verificar si el lote ya existe
+            const lotes = loadLotes();
+            if (lotes.some(lote => lote.nombre === loteName)) {
+                alert("Ya existe un lote con ese nombre");
+                return;
+            }
+            
+            // Guardar el lote
+            lotes.push({
+                nombre: loteName,
+                animales: selectedAnimals
+            });
+            saveLotes(lotes);
+            
+            // Actualizar los animales con el lote asignado
+            const animals = loadAnimals();
+            animals.forEach(animal => {
+                if (selectedAnimals.includes(animal.coqueta)) {
+                    animal.lote = loteName;
+                }
+            });
+            saveAnimals(animals);
+            
+            alert(`Lote "${loteName}" creado con ${selectedAnimals.length} animal(es)`);
+            
+            // Limpiar y volver
+            document.getElementById('newLoteName').value = '';
+            document.getElementById('createLoteForm').style.display = 'none';
+            loadLoteList();
+            document.getElementById('loteList').style.display = 'block';
+        });
+
+        // ===== REPORTES =====
+        document.getElementById('reportesBtn').addEventListener('click', function() {
+            document.getElementById('reportsContainer').style.display = 'block';
+            document.getElementById('mainMenu').style.display = 'none';
+            loadPartosReport();
+        });
+        
+        document.getElementById('backFromReportsBtn').addEventListener('click', function() {
+            document.getElementById('reportsContainer').style.display = 'none';
+            document.getElementById('mainMenu').style.display = 'grid';
+            document.getElementById('animalDetailView').style.display = 'none';
+        });
+        
+        document.getElementById('backFromDetailBtn').addEventListener('click', function() {
+            document.getElementById('animalDetailView').style.display = 'none';
+        });
+        
+        function loadPartosReport() {
+            const animals = loadAnimals();
+            const reportList = document.getElementById('reportPartosList');
+            reportList.innerHTML = '';
+            
+            // Filtrar animales con 8+ meses de preñez
+            const animalesProximos = animals.filter(animal => animal.preñez >= 8);
+            
+            if (animalesProximos.length === 0) {
+                reportList.innerHTML = '<p style="text-align: center;">No hay animales próximos a parir</p>';
+                return;
+            }
+            
+            // Ordenar por tiempo de preñez (mayor primero)
+            animalesProximos.sort((a, b) => b.preñez - a.preñez);
+            
+            animalesProximos.forEach(animal => {
+                const item = document.createElement('div');
+                item.className = `report-item ${animal.preñez >= 8.5 ? 'urgent' : ''}`;
+                item.innerHTML = `
+                    <div class="report-animal-name">${animal.nombre}</div>
+                    <div>Edad: ${animal.edad} años</div>
+                    <div class="report-preniez">Tiempo de preñez: ${animal.preñez} meses</div>
+                `;
+                
+                item.addEventListener('click', function() {
+                    showAnimalDetail(animal);
+                });
+                
+                reportList.appendChild(item);
+            });
+        }
+        
+        // Mostrar detalles del animal
+        function showAnimalDetail(animal) {
+            currentAnimalDetail = animal;
+            document.getElementById('reportPartosList').style.display = 'none';
+            document.getElementById('animalDetailView').style.display = 'block';
+            
+            document.getElementById('detailNombre').textContent = animal.nombre;
+            document.getElementById('detailCoqueta').textContent = animal.coqueta;
+            document.getElementById('detailRaza').textContent = animal.raza;
+            document.getElementById('detailTipo').textContent = animal.tipo;
+            document.getElementById('detailEdad').textContent = `${animal.edad} años`;
+            document.getElementById('detailPartos').textContent = animal.partos;
+            document.getElementById('detailPreniez').textContent = `${animal.preñez} meses`;
+            
+            // Mostrar vacunas
+            const vacunas = animal.vacunas && animal.vacunas.length > 0 
+                ? animal.vacunas.map(v => `${v.nombre} (${formatDate(v.fecha)})`).join(', ')
+                : 'No registradas';
+            document.getElementById('detailVacunas').textContent = vacunas;
+            
+            // Mostrar lote
+            const lote = animal.lote || 'No asignado';
+            document.getElementById('detailLote').textContent = lote;
+        }
+
+        // Establecer fecha mínima en el campo de fecha (hoy)
+        document.getElementById('vaccineDate').min = new Date().toISOString().split('T')[0];
+    </script>
+</body>
+</html>
